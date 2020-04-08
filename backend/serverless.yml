@@ -1,0 +1,44 @@
+service:
+  name: aws-capstone
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-dynamodb-local
+  - serverless-offline # serverless offline start
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  environment:
+    variable1: value1
+
+stage: dev
+region: us-east-1
+
+# package:
+#   exclude:
+#     - node_modules/**/*
+#   include:
+#     handler.ts
+
+functions:
+  hello:
+    handler: src/handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
+    # environment:
+    #   variable1: value2
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
