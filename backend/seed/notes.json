@@ -1,0 +1,18 @@
+[
+  {
+    "userId": "vku",
+    "noteId": "c9fc8f93-3c09-4394-95ab-c4afe1303915",
+    "title": "Note number one",
+    "body": "# Note number one\n- list item 1\n- list item 2",
+    "createdAt": "2020-04-14T20:17:14.204Z",
+    "updatedAt": "2020-04-14T20:17:14.204Z"
+  },
+  {
+    "userId": "vku",
+    "noteId": "f5be0c16-5584-4008-844e-fdbe39c4e301",
+    "title": "Note number two",
+    "body": "# Note number two\n- list item 1\n- list item 2",
+    "createdAt": "2020-04-14T17:17:14.204Z",
+    "updatedAt": "2020-04-14T18:17:14.204Z"
+  }
+]

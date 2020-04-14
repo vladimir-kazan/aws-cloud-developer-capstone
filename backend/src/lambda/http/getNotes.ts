@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
 import { createLogger, getWithCors } from '../../utils';
+import { getNotes } from '../../businessLogic/notes';
 
 const logger = createLogger('getNotes');
 const withCors = getWithCors({
@@ -10,9 +11,10 @@ const withCors = getWithCors({
 
 const getNotesHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info('Caller event', event);
+  const items = await getNotes('vku');
   const response = {
     statusCode: 200,
-    body: JSON.stringify({ msg: 'Hello world' }),
+    body: JSON.stringify(items),
   };
   return withCors(response);
 };

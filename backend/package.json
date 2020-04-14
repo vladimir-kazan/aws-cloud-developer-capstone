@@ -2,7 +2,6 @@
   "name": "aws-nodejs",
   "version": "1.0.0",
   "description": "",
-  "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +10,9 @@
   "license": "ISC",
   "devDependencies": {
     "@types/aws-lambda": "8.10.47",
+    "aws-xray-sdk": "2.5.0",
     "serverless-dynamodb-local": "0.2.39",
+    "serverless-iam-roles-per-function": "2.0.2",
     "serverless-offline": "6.1.4",
     "serverless-plugin-typescript": "1.1.9",
     "typescript": "3.8.3"

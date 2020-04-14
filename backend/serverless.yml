@@ -4,13 +4,17 @@ service:
 plugins:
   - serverless-plugin-typescript
   - serverless-dynamodb-local
+  # - serverless-plugin-offline-dynamodb-stream
   - serverless-offline # serverless offline start
+  - serverless-iam-roles-per-function
 
 provider:
   name: aws
   runtime: nodejs12.x
   environment:
-    variable1: value1
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    NOTES_TABLE: notes-${self:provider.stage}-v1
+    NOTES_BUCKET: notes-images-${self:provider.stage}-v1
 
 stage: dev
 region: us-east-1
@@ -28,17 +32,98 @@ functions:
       - http:
           path: notes
           method: get
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}
+
+
     # environment:
     #   variable1: value2
 
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Credentials: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: ApiGatewayRestApi
+
+    NotesDynamoDBTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+          AttributeDefinitions:
+          - AttributeName: userId # partition key
+            AttributeType: S
+          - AttributeName: noteId # sort key
+            AttributeType: S
+          KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: noteId
+            KeyType: RANGE
+          BillingMode: PAY_PER_REQUEST
+          TableName: ${self:provider.environment.NOTES_TABLE}
+
+    AttachmentsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.NOTES_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+          -
+            AllowedOrigins:
+            - '*'
+            AllowedHeaders:
+            - '*'
+            AllowedMethods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - HEAD
+            MaxAge: 3000
+    # BucketPolicy:
+    #   Type: AWS::S3::BucketPolicy
+    #   Properties:
+    #     Bucket:
+    #       Ref: AttachmentsBucket
+    #     PolicyDocument:
+    #       Id: NotesBucketPolicy
+    #       Version: "2012-10-17"
+    #       Statement:
+    #         - Sid: PublicReadForGetBucketObjects
+    #           Effect: Allow
+    #           Principal: '*'
+    #           Action: 's3:GetObject'
+    #           Resource: 'arn:aws:s3:::${self:provider.environment.NOTES_BUCKET}/*'
+
+custom:
+  dynamodb:
+  # If you only want to use DynamoDB Local in some stages, declare them here
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      heapInitial: 200m
+      heapMax: 1g
+      migrate: true
+      seed: true
+      convertEmptyValues: true
+    # Uncomment only if you already have a DynamoDB running locally
+    # noStart: true
+    seed:
+      demo:
+        sources:
+          - table: ${self:provider.environment.NOTES_TABLE}
+            sources: [./seed/notes.json]
