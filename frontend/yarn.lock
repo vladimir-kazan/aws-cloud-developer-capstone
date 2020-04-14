@@ -1417,6 +1417,11 @@
   resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-10.0.1.tgz#9a02dbbc813135f25778b17f92a63933a58e8af5"
   integrity sha512-M63ftowo1QpAGMnWyz7df0ygqnu4XyF68Sty7mivMAz2HLcY1uLoN3qcen6WMobdY0MoZUi4+BLsziSDAP62Vg==
 
+"@types/auth0-js@^9.12.4":
+  version "9.12.4"
+  resolved "https://registry.yarnpkg.com/@types/auth0-js/-/auth0-js-9.12.4.tgz#93a622e6382163c54387b5471e9fd89d77529a0e"
+  integrity sha512-4r3OGEyRYb7r9lHd5TQ/9Mjszopv+JBC5c6Fb2lDfxc7PDFzIpSg9kD0l+4Kd6OmVwwWjqaBWCoqM8Clx/1Yig==
+
 "@types/babel__core@^7.1.0":
   version "7.1.7"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.7.tgz#1dacad8840364a57c98d0dd4855c6dd3752c6b89"

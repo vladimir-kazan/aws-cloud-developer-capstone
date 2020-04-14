@@ -1,25 +1,28 @@
-import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import React, { Fragment } from 'react';
+import { AuthService } from './auth/auth';
+import { Router, Switch, Route } from 'react-router-dom';
 
 import { NavigationBar } from './components/NavigationBar';
-import { HelpPage } from './components/HelpPage';
 import { HomePage } from './components/HomePage';
+import { HelpPage } from './components/HelpPage';
 
-const App = () => {
+interface Props {
+  auth: AuthService;
+  isAuthenticating?: boolean;
+  history: any;
+}
+
+const App = (props: Props) => {
   return (
-    <div className="bp3-dark">
-      <Router>
-        <NavigationBar />
+    <Fragment>
+      <NavigationBar auth={props.auth} />
+      <Router history={props.history}>
         <Switch>
-          <Route path="/help">
-            <HelpPage />
-          </Route>
-          <Route path="/">
-            <HomePage />
-          </Route>
+          <Route path="/" exact component={HomePage}></Route>
+          <Route path="/help" exact component={HelpPage}></Route>
         </Switch>
       </Router>
-    </div>
+    </Fragment>
   );
 };
 
