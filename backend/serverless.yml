@@ -18,15 +18,15 @@ region: us-east-1
 # package:
 #   exclude:
 #     - node_modules/**/*
-#   include:
-#     handler.ts
+  # include:
+  #   handler.ts
 
 functions:
-  hello:
-    handler: src/handler.hello
+  getNotes:
+    handler: src/lambda/http/getNotes.handler
     events:
       - http:
-          path: hello
+          path: notes
           method: get
     # environment:
     #   variable1: value2
