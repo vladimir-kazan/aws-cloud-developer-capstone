@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Card, Button } from '@blueprintjs/core';
+import { Card, Colors } from '@blueprintjs/core';
+import { backendConfig } from '../config';
+import { formatToShortDate } from '../utils/date';
 
 const Container = styled.div`
   display: flex;
@@ -17,41 +19,64 @@ const RightPanel = styled.div`
   width: 100%;
 `;
 
+const StyledCard = styled(Card)<{ selected: boolean }>`
+  color: ${Colors.LIGHT_GRAY5};
+
+  &.bp3-card {
+    background-color: ${({ selected }) => (selected ? Colors.DARK_GRAY3 : 'inherit' )};
+
+  }
+  &:hover {
+    background-color: ${Colors.DARK_GRAY4};
+  }
+  p {
+    color: ${Colors.LIGHT_GRAY1};
+  }
+`;
+
 interface Note {
-  id: string;
+  noteId: string;
+  userId: string;
   title: string;
-  content: string;
+  body: string;
+  updatedAt: string;
+  createdAt: string;
+  [k: string]: any;
 }
 
+const notesUrl = `${backendConfig.api}/notes`;
 export const HomePage = () => {
-
   const [notes, setNotes] = useState<Note[]>([]);
-  const [selected, setSelected] = useState<Note|null>(null);
+  const [selected, setSelected] = useState<Note | null>(null);
   useEffect(() => {
-    console.log('load once');
-
     (async () => {
-      console.log(await fetch('example.com'));
-      setNotes([]);
-      setSelected(null);
+      let items: Note[] = await (await fetch(notesUrl)).json();
+      items = items.map((n) => {
+        n.updatedAtString = formatToShortDate(new Date(n.updatedAt));
+        return n;
+      });
+      const [first = null] = items;
+      setNotes(items);
+      setSelected(first);
     })();
   }, []);
-
+  console.log({ selected });
+  const { noteId: selectedId = '' }  = selected || {};
   return (
     <Container>
       <LeftPanel>
-        {notes.map((n) => (
-          <Card interactive={true}>
-              {/* <h5><a href="#">Card heading</a></h5> */}
-              <p>Card content</p>
-              <Button>Submit</Button>
-          </Card>
-        ))}
-
+        {notes.map((n: Note) => {
+          console.log(n.noteId === selectedId);
+          return (
+            <StyledCard key={n.noteId} interactive={true}
+              selected={n.noteId === selectedId}
+              onClick={() => setSelected(n)}>
+              <h3>{n.title}</h3>
+              <p>{n.updatedAtString}</p>
+            </StyledCard>);
+        })}
       </LeftPanel>
-      <RightPanel>
-        Content {selected}
-      </RightPanel>
+      <RightPanel>Content {selected?.body}</RightPanel>
     </Container>
   );
 };

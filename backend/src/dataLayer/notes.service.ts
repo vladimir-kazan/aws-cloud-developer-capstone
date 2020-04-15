@@ -8,7 +8,6 @@ if (!IS_OFFLINE) {
   // it adds 10MB
   // XAWS = AWSXRay.captureAWS(AWS);
 }
-console.log({ IS_OFFLINE });
 
 const createDynamoDbClient = () => {
   if (IS_OFFLINE) {

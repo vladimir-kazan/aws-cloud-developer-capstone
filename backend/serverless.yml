@@ -109,7 +109,6 @@ resources:
 
 custom:
   dynamodb:
-  # If you only want to use DynamoDB Local in some stages, declare them here
     stages:
       - dev
     start:
@@ -120,8 +119,7 @@ custom:
       migrate: true
       seed: true
       convertEmptyValues: true
-    # Uncomment only if you already have a DynamoDB running locally
-    # noStart: true
+      noStart: false
     seed:
       demo:
         sources:

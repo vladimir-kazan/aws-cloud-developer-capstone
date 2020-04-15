@@ -4,4 +4,4 @@ dev:
 
 .PHONY: serve
 serve:
-	cd backend && sls offline start --httpPort 3001
+	cd backend && IS_OFFLINE=true sls offline start --httpPort 3001

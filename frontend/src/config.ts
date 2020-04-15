@@ -5,8 +5,8 @@ export const authConfig = {
 };
 
 
-export const backend = {
+export const backendConfig = {
   // https://gs4v8kipq1.execute-api.us-east-1.amazonaws.com/dev
   //
-  api: 'http://localhost:3001/dev/',
+  api: 'http://localhost:3001/dev',
 };
