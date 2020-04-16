@@ -1,28 +1,67 @@
-import React, { Fragment } from 'react';
-import { AuthService } from './auth/auth';
-import { Router, Switch, Route } from 'react-router-dom';
+import React from 'react';
+import { Router, Switch, Route, Redirect } from 'react-router-dom';
+import { createBrowserHistory, LocationState } from 'history';
+import { FocusStyleManager } from '@blueprintjs/core';
 
-import { NavigationBar } from './components/NavigationBar';
+import { AuthService } from './services/auth';
 import { HomePage } from './components/HomePage';
+import { NavigationBar } from './components/NavigationBar';
 import { HelpPage } from './components/HelpPage';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { LoginPage } from './components/LoginPage';
+import { ApiService, ApiContext } from './services/api';
 
-interface Props {
-  auth: AuthService;
-  isAuthenticating?: boolean;
-  history: any;
-}
+const history: any = createBrowserHistory<LocationState>();
+const localStorageService: Storage = localStorage;
+const authService = new AuthService(history, localStorageService);
+const apiService = new ApiService(localStorageService, authService);
+const handleAuthentication = (props: any) => {
+  const location = props.location;
+  if (/access_token|id_token|error/.test(location.hash)) {
+    authService.handleAuthentication();
+  }
+};
 
-const App = (props: Props) => {
+FocusStyleManager.onlyShowFocusOnTabs();
+
+const App = () => {
   return (
-    <Fragment>
-      <NavigationBar auth={props.auth} />
-      <Router history={props.history}>
-        <Switch>
-          <Route path="/" exact component={HomePage}></Route>
-          <Route path="/help" exact component={HelpPage}></Route>
-        </Switch>
-      </Router>
-    </Fragment>
+    <div className="bp3-dark">
+      <ApiContext.Provider value={apiService}>
+        <Router history={history}>
+          <NavigationBar auth={authService} />
+          <Switch>
+            <ProtectedRoute path="/notes" auth={authService}>
+              <HomePage />
+            </ProtectedRoute>
+            <Route path="/help" exact component={HelpPage}></Route>
+            <Route
+              path="/callback"
+              render={(props) => {
+                handleAuthentication(props);
+                return <LoginPage auth={authService} callbackInProgress />;
+              }}
+            />
+            <Route
+              path="/"
+              render={({ location }) => {
+                if (authService.isAuthenticated()) {
+                  return (
+                    <Redirect
+                      to={{
+                        pathname: '/notes',
+                        state: { from: location },
+                      }}
+                    />
+                  );
+                }
+                return <LoginPage auth={authService} />;
+              }}
+            />
+          </Switch>
+        </Router>
+      </ApiContext.Provider>
+    </div>
   );
 };
 

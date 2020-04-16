@@ -74,6 +74,7 @@ export class AuthService {
   }
 
   isAuthenticated = () => {
+    console.log({ isAuthN: new Date().getTime() < this.expiresAt });
     return new Date().getTime() < this.expiresAt;
   }
 

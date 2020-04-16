@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Card, Colors } from '@blueprintjs/core';
-import { backendConfig } from '../config';
-import { formatToShortDate } from '../utils/date';
 import { Content } from './Content';
+import { useApi, Note } from '../services/api';
 
 const Container = styled.div`
   display: flex;
@@ -42,36 +41,19 @@ const Updated = styled.p`
   color: ${Colors.GRAY3};
 `;
 
-interface Note {
-  noteId: string;
-  userId: string;
-  title: string;
-  body: string;
-  updatedAt: string;
-  createdAt: string;
-  [k: string]: any;
-}
-
-const notesUrl = `${backendConfig.api}/notes`;
 export const HomePage = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [selected, setSelected] = useState<Note | null>(null);
+  const api = useApi();
+
   useEffect(() => {
     (async () => {
-      const response = await fetch(notesUrl);
-      if (response.status !== 200) {
-        return;
-      }
-      let items: Note[] = await response.json();
-      items = items.map((n) => {
-        n.updatedAtString = formatToShortDate(new Date(n.updatedAt));
-        return n;
-      });
+      const items = await api.getNotes();
       const [first = null] = items;
       setNotes(items);
       setSelected(first);
     })();
-  }, []);
+  }, [api]);
   const { noteId: selectedId = '' } = selected || {};
   return (
     <Container>
