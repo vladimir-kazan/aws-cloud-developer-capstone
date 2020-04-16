@@ -9,9 +9,9 @@ const withCors = getWithCors({
   credentials: true,
 });
 
-const getNotesHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+const notesByUserHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info('Caller event', event);
-  const items = await getNotes('vku');
+  let items = (await getNotes('vku')).map((n) => ({ ...n, body: undefined }));
   const response = {
     statusCode: 200,
     body: JSON.stringify(items),
@@ -19,4 +19,4 @@ const getNotesHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayP
   return withCors(response);
 };
 
-export const handler = getNotesHandler;
+export const handler = notesByUserHandler;

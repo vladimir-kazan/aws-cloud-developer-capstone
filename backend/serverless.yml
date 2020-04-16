@@ -27,7 +27,7 @@ region: us-east-1
 
 functions:
   getNotes:
-    handler: src/lambda/http/getNotes.handler
+    handler: src/lambda/http/notesByUser.handler
     events:
       - http:
           path: notes
@@ -37,6 +37,18 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}
+  getNoteById:
+    handler: src/lambda/http/noteById.handler
+    events:
+      - http:
+          path: notes/{noteId}
+          method: get
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}
 
 

@@ -49,6 +49,19 @@ export class NotesService {
       .promise();
     return <NoteModel[]>payload.Items;
   }
+
+  async getById(userId: string, noteId: string): Promise<NoteModel> {
+    const output = await this.docClient
+      .get({
+        TableName: NOTES_TABLE,
+        Key: {
+          userId,
+          noteId,
+        },
+      })
+      .promise();
+    return <NoteModel>output.Item;
+  }
 }
 
 export interface NoteModel {
