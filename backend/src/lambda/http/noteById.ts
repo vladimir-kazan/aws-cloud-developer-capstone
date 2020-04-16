@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
 import { createLogger, getWithCors } from '../../utils';

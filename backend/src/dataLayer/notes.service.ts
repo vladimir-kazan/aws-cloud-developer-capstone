@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import * as AWS from 'aws-sdk';
 // import * as AWSXRay from 'aws-xray-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
@@ -18,7 +19,7 @@ const createDynamoDbClient = () => {
     return new (XAWS.DynamoDB as any).DocumentClient({
       region: 'localhost',
       endpoint: 'http://localhost:8000',
-      accessKeyId: 'DEFAULT_ACCESS_KEY',  // needed if you don't have aws credentials at all in env
+      accessKeyId: 'DEFAULT_ACCESS_KEY', // needed if you don't have aws credentials at all in env
       secretAccessKey: 'DEFAULT_SECRET',
     });
   }
@@ -26,9 +27,7 @@ const createDynamoDbClient = () => {
 };
 
 export class NotesService {
-  constructor(
-    private readonly docClient: DocumentClient = createDynamoDbClient(),
-  ) {}
+  constructor(private readonly docClient: DocumentClient = createDynamoDbClient()) {}
 
   async createItem(dto: NoteModel): Promise<NoteModel> {
     await this.docClient

@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import { verify } from 'jsonwebtoken';
 import { createLogger } from '../utils';
 import { AuthService } from '../dataLayer/auth.service';
@@ -8,10 +9,10 @@ const authAccess = new AuthService();
 const logger = createLogger('BL/auth');
 
 export interface JwtPayload {
-  iss: string
-  sub: string
-  iat: number
-  exp: number
+  iss: string;
+  sub: string;
+  iat: number;
+  exp: number;
 }
 
 export const verifyToken = async (token: string): Promise<JwtPayload> => {

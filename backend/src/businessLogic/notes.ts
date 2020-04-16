@@ -1,4 +1,5 @@
-import { NotesService, NoteModel } from "../dataLayer/notes.service";
+import 'source-map-support/register';
+import { NotesService, NoteModel } from '../dataLayer/notes.service';
 
 const noteService = new NotesService();
 
