@@ -1,6 +1,7 @@
 import * as AWS from 'aws-sdk';
 // import * as AWSXRay from 'aws-xray-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { createLogger } from '../utils';
 
 let XAWS: any = AWS;
 const { NOTES_TABLE = '', IS_OFFLINE } = process.env;
@@ -9,9 +10,11 @@ if (!IS_OFFLINE) {
   // XAWS = AWSXRay.captureAWS(AWS);
 }
 
+const logger = createLogger('DL/NotesService');
+
 const createDynamoDbClient = () => {
   if (IS_OFFLINE) {
-    console.log('Creating a local DynamoDB instance');
+    logger.info('Creating a local DynamoDB instance', {});
     return new (XAWS.DynamoDB as any).DocumentClient({
       region: 'localhost',
       endpoint: 'http://localhost:8000',

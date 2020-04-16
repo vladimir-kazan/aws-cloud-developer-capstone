@@ -58,7 +58,11 @@ export const HomePage = () => {
   const [selected, setSelected] = useState<Note | null>(null);
   useEffect(() => {
     (async () => {
-      let items: Note[] = await (await fetch(notesUrl)).json();
+      const response = await fetch(notesUrl);
+      if (response.status !== 200) {
+        return;
+      }
+      let items: Note[] = await response.json();
       items = items.map((n) => {
         n.updatedAtString = formatToShortDate(new Date(n.updatedAt));
         return n;

@@ -26,6 +26,13 @@ region: us-east-1
   #   handler.ts
 
 functions:
+  auth:
+    handler: src/lambda/auth/authorizer.handler
+    environment:
+      AUTH_JWKS: "https://vku713.auth0.com/.well-known/jwks.json"
+      AUTH_CLIENT_ID: "j9orHymagS29sn65A5j2xZs8JySS4upc"
+      AUTH_ISSUER: "https://vku713.auth0.com/"
+
   getNotes:
     handler: src/lambda/http/notesByUser.handler
     events:
@@ -33,6 +40,7 @@ functions:
           path: notes
           method: get
           cors: true
+          authorizer: auth
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -45,6 +53,7 @@ functions:
           path: notes/{noteId}
           method: get
           cors: true
+          authorizer: auth
     iamRoleStatements:
       - Effect: Allow
         Action:
