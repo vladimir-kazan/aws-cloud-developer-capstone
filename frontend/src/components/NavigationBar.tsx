@@ -21,7 +21,7 @@ export const NavigationBar = (props: Props) => {
     history.push(path);
   };
   return (
-    <Navbar>
+    <Navbar fixedToTop>
       <NavbarGroup align={Alignment.LEFT}>
         <NavbarHeading>Markdown Notebook</NavbarHeading>
         <NavbarDivider />

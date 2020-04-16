@@ -33,6 +33,17 @@ export class ApiService {
     return items || [];
   };
 
+  getNoteById = async (noteId: string): Promise<Note | undefined> => {
+    const response = await fetch(`${notesUrl}/${noteId}`, {
+      headers: this.getHeaders(),
+    });
+    if (response.status !== 200) {
+      return;
+    }
+    const item: Note = await response.json();
+    return item;
+  };
+
   private getHeaders = () => {
     return {
       Authorization: `Bearer ${this.auth.getIdToken()}`,

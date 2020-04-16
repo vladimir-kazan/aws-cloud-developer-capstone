@@ -2,20 +2,22 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Card, Colors } from '@blueprintjs/core';
 import { Content } from './Content';
-import { useApi, Note } from '../services/api';
+import { useApi, Note } from '../services/api.service';
 
 const Container = styled.div`
   display: flex;
+  height: 100vh;
+  padding-top: 50px;
 `;
 
 const LeftPanel = styled.div`
-  min-height: 100vh;
+  min-height: 100%;
   min-width: 330px;
 `;
 
 const RightPanel = styled.div`
   background: ${Colors.LIGHT_GRAY1};
-  min-height: 100vh;
+  min-height: 100%;
   width: 100%;
 `;
 
@@ -73,6 +75,7 @@ export const HomePage = () => {
         })}
       </LeftPanel>
       <RightPanel>
+        {selected?.body}
         <Content noteId={selectedId}></Content>
       </RightPanel>
     </Container>

@@ -9,7 +9,7 @@ import { NavigationBar } from './components/NavigationBar';
 import { HelpPage } from './components/HelpPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LoginPage } from './components/LoginPage';
-import { ApiService, ApiContext } from './services/api';
+import { ApiService, ApiContext } from './services/api.service';
 
 const history: any = createBrowserHistory<LocationState>();
 const localStorageService: Storage = localStorage;
