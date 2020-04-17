@@ -14,7 +14,11 @@ provider:
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     NOTES_TABLE: notes-${self:provider.stage}-v1
+    NOTES_IDX_TITLE: notes-idx-title-${self:provider.stage}-v1
+    NOTES_IDX_UPDATED: notes-idx-updated-${self:provider.stage}-v1
     NOTES_BUCKET: notes-images-${self:provider.stage}-v1
+    ELASTIC_URL:
+      Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]
 
 stage: dev
 region: us-east-1
@@ -22,16 +26,16 @@ region: us-east-1
 # package:
 #   exclude:
 #     - node_modules/**/*
-  # include:
-  #   handler.ts
+# include:
+#   handler.ts
 
 functions:
   auth:
     handler: src/lambda/auth/authorizer.handler
     environment:
-      AUTH_JWKS: "https://vku713.auth0.com/.well-known/jwks.json"
-      AUTH_CLIENT_ID: "j9orHymagS29sn65A5j2xZs8JySS4upc"
-      AUTH_ISSUER: "https://vku713.auth0.com/"
+      AUTH_JWKS: 'https://vku713.auth0.com/.well-known/jwks.json'
+      AUTH_CLIENT_ID: 'j9orHymagS29sn65A5j2xZs8JySS4upc'
+      AUTH_ISSUER: 'https://vku713.auth0.com/'
 
   getNotes:
     handler: src/lambda/http/notesByUser.handler
@@ -41,6 +45,10 @@ functions:
           method: get
           cors: true
           authorizer: auth
+          request:
+            parameters:
+              querystrings:
+                sort: false
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -59,7 +67,6 @@ functions:
         Action:
           - dynamodb:GetItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}
-
 
     # environment:
     #   variable1: value2
@@ -80,20 +87,55 @@ resources:
           Ref: ApiGatewayRestApi
 
     NotesDynamoDBTable:
-        Type: AWS::DynamoDB::Table
-        Properties:
-          AttributeDefinitions:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
           - AttributeName: userId # partition key
             AttributeType: S
           - AttributeName: noteId # sort key
             AttributeType: S
-          KeySchema:
+          - AttributeName: title # sort key
+            AttributeType: S
+          - AttributeName: updatedAt # sort key
+            AttributeType: S
+        KeySchema:
           - AttributeName: userId
             KeyType: HASH
           - AttributeName: noteId
             KeyType: RANGE
-          BillingMode: PAY_PER_REQUEST
-          TableName: ${self:provider.environment.NOTES_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.NOTES_TABLE}
+        LocalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.NOTES_IDX_TITLE}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: title
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL # What attributes will be copied to an index
+          - IndexName: ${self:provider.environment.NOTES_IDX_UPDATED}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: updatedAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL # What attributes will be copied to an index
+
+    ElasticSearchInstance:
+      Type: AWS::Elasticsearch::Domain
+      Properties:
+        EBSOptions:
+          EBSEnabled: true
+          VolumeType: gp2
+          VolumeSize: 10
+        ElasticsearchClusterConfig:
+          InstanceType: t2.small.elasticsearch
+          InstanceCount: 1
+          DedicatedMasterEnabled: false
+          ZoneAwarenessEnabled: false
+        ElasticsearchVersion: 7.4
 
     AttachmentsBucket:
       Type: AWS::S3::Bucket
@@ -101,18 +143,17 @@ resources:
         BucketName: ${self:provider.environment.NOTES_BUCKET}
         CorsConfiguration:
           CorsRules:
-          -
-            AllowedOrigins:
-            - '*'
-            AllowedHeaders:
-            - '*'
-            AllowedMethods:
-            - GET
-            - POST
-            - PUT
-            - DELETE
-            - HEAD
-            MaxAge: 3000
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                - HEAD
+              MaxAge: 3000
     # BucketPolicy:
     #   Type: AWS::S3::BucketPolicy
     #   Properties:

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, FunctionComponent } from 'react';
 import { ControlGroup, HTMLSelect, Button } from '@blueprintjs/core';
 
 const FILTER_OPTIONS = [
@@ -8,7 +8,11 @@ const FILTER_OPTIONS = [
   'Updated - descending',
 ];
 
-export const ListToolbar = () => {
+interface Props {
+  onAddNew: () => void;
+}
+
+export const ListToolbar: FunctionComponent<Props> = ({ onAddNew }) => {
   const [sorting, setSorting] = useState<string>(FILTER_OPTIONS[0]);
   return (
     <ControlGroup fill>
@@ -17,7 +21,7 @@ export const ListToolbar = () => {
         value={sorting}
         onChange={(e) => setSorting(e.target.value)}
       />
-      <Button icon="add" text="Add" intent="success" />
+      <Button icon="add" text="Add" intent="success" onClick={onAddNew} />
     </ControlGroup>
   );
 };

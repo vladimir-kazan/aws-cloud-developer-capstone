@@ -4,6 +4,7 @@ import { Card, Colors } from '@blueprintjs/core';
 import { Content } from './Content';
 import { useApi, Note } from '../services/api.service';
 import { ListToolbar } from './ListToolbar';
+import { useParams, useHistory } from 'react-router-dom';
 
 const Container = styled.div`
   display: flex;
@@ -45,6 +46,16 @@ const Updated = styled.p`
 `;
 
 export const HomePage = () => {
+  const { noteId } = useParams();
+  console.log({ noteId });
+  const history = useHistory();
+  // useEffect(() => {
+  //   if (!noteId) {
+  //     history.replace('/notes/create');
+  //   }
+  // }, [noteId, history]);
+  // console.log({ noteId });
+
   const [notes, setNotes] = useState<Note[]>([]);
   const [selected, setSelected] = useState<Note | null>(null);
   const api = useApi();
@@ -57,11 +68,23 @@ export const HomePage = () => {
       setSelected(first);
     })();
   }, [api]);
+
   const { noteId: selectedId = '' } = selected || {};
+  useEffect(() => {
+    if (selectedId) {
+      history.replace(`/notes/${selectedId}`);
+    }
+  }, [selectedId, history]);
+
+  const onAddNew = () => {
+    console.log('onAddNew');
+    history.replace('/notes/create');
+  };
+
   return (
     <Container>
       <LeftPanel>
-        <ListToolbar />
+        <ListToolbar onAddNew={onAddNew} />
         {notes.map((n: Note) => {
           return (
             <StyledCard

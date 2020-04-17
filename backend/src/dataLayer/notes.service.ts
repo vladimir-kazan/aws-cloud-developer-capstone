@@ -5,11 +5,18 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { createLogger } from '../utils';
 
 let XAWS: any = AWS;
-const { NOTES_TABLE = '', IS_OFFLINE } = process.env;
+const { NOTES_TABLE = '', NOTES_IDX_TITLE = '', NOTES_IDX_UPDATED = '', IS_OFFLINE } = process.env;
 if (!IS_OFFLINE) {
   // it adds 10MB
   // XAWS = AWSXRay.captureAWS(AWS);
 }
+
+const sortIndices = {
+  title: NOTES_IDX_TITLE,
+  '-title': NOTES_IDX_TITLE,
+  updated: NOTES_IDX_UPDATED,
+  '-updated': NOTES_IDX_UPDATED,
+};
 
 const logger = createLogger('DL/NotesService');
 
@@ -39,10 +46,12 @@ export class NotesService {
     return dto;
   }
 
-  async getItems(userId: string): Promise<NoteModel[]> {
+  async getItems(userId: string, sortBy: string): Promise<NoteModel[]> {
     const payload = await this.docClient
       .query({
         TableName: NOTES_TABLE,
+        IndexName: sortIndices[sortBy],
+        ScanIndexForward: sortBy[0] !== '-',
         KeyConditionExpression: 'userId = :userId',
         ExpressionAttributeValues: {
           ':userId': userId,

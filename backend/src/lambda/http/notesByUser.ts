@@ -10,9 +10,16 @@ const withCors = getWithCors({
   credentials: true,
 });
 
+const validSortings = ['title', '-title', 'updated', '-updated'];
+
 const notesByUserHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info('Caller event', event);
-  let items = (await getNotes('vku')).map((n) => ({ ...n, body: undefined }));
+  let { sort = 'title' } = event.queryStringParameters || {};
+  sort = sort.toLowerCase();
+  if (!validSortings.includes(sort)) {
+    sort = 'title';
+  }
+  let items = (await getNotes('vku', sort)).map((n) => ({ ...n, body: undefined }));
   const response = {
     statusCode: 200,
     body: JSON.stringify(items),

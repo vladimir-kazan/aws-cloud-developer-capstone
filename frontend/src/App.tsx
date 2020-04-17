@@ -31,7 +31,7 @@ const App = () => {
         <Router history={history}>
           <NavigationBar auth={authService} />
           <Switch>
-            <ProtectedRoute path="/notes" auth={authService}>
+            <ProtectedRoute path="/notes/:noteId?" auth={authService}>
               <HomePage />
             </ProtectedRoute>
             <Route path="/help" exact component={HelpPage}></Route>
