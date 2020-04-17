@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Card, Colors } from '@blueprintjs/core';
 import { Content } from './Content';
 import { useApi, Note } from '../services/api.service';
+import { ListToolbar } from './ListToolbar';
 
 const Container = styled.div`
   display: flex;
@@ -60,6 +61,7 @@ export const HomePage = () => {
   return (
     <Container>
       <LeftPanel>
+        <ListToolbar />
         {notes.map((n: Note) => {
           return (
             <StyledCard
@@ -75,7 +77,6 @@ export const HomePage = () => {
         })}
       </LeftPanel>
       <RightPanel>
-        {selected?.body}
         <Content noteId={selectedId}></Content>
       </RightPanel>
     </Container>

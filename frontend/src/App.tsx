@@ -3,7 +3,7 @@ import { Router, Switch, Route, Redirect } from 'react-router-dom';
 import { createBrowserHistory, LocationState } from 'history';
 import { FocusStyleManager } from '@blueprintjs/core';
 
-import { AuthService } from './services/auth';
+import { AuthService } from './services/auth.service';
 import { HomePage } from './components/HomePage';
 import { NavigationBar } from './components/NavigationBar';
 import { HelpPage } from './components/HelpPage';

@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { AuthService } from './auth';
+import { AuthService } from './auth.service';
 import { backendConfig } from '../config';
 import { formatToShortDate } from '../utils/date';
 
@@ -19,9 +19,7 @@ export class ApiService {
   constructor(private readonly localStorage: Storage, private readonly auth: AuthService) {}
 
   getNotes = async (): Promise<Note[]> => {
-    const response = await fetch(notesUrl, {
-      headers: this.getHeaders(),
-    });
+    const response = await this.execute(notesUrl);
     if (response.status !== 200) {
       return [];
     }
@@ -34,14 +32,20 @@ export class ApiService {
   };
 
   getNoteById = async (noteId: string): Promise<Note | undefined> => {
-    const response = await fetch(`${notesUrl}/${noteId}`, {
-      headers: this.getHeaders(),
-    });
-    if (response.status !== 200) {
-      return;
-    }
+    const url = `${notesUrl}/${noteId}`;
+    const response = await this.execute(url);
     const item: Note = await response.json();
     return item;
+  };
+
+  private execute = async (url: string) => {
+    const response = await fetch(url, {
+      headers: this.getHeaders(),
+    });
+    if (response.status === 403) {
+      this.auth.login();
+    }
+    return response;
   };
 
   private getHeaders = () => {

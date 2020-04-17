@@ -9,7 +9,7 @@ import {
   NavbarHeading,
 } from '@blueprintjs/core';
 import { useHistory } from 'react-router-dom';
-import { AuthService } from '../services/auth';
+import { AuthService } from '../services/auth.service';
 
 interface Props {
   auth: AuthService;

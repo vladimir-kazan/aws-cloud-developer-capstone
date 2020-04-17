@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Route, Redirect, RouteProps } from 'react-router-dom';
-import { AuthService } from '../services/auth';
+import { AuthService } from '../services/auth.service';
 
 interface Props extends RouteProps {
   auth: AuthService;

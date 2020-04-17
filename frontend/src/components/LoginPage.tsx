@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { NonIdealState, Button } from '@blueprintjs/core';
-import { AuthService } from '../services/auth';
+import { AuthService } from '../services/auth.service';
 import styled from 'styled-components';
 
 const Container = styled.div`

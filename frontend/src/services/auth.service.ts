@@ -7,28 +7,25 @@ export class AuthService {
     clientID: authConfig.clientId,
     redirectUri: authConfig.callbackUrl,
     responseType: 'token id_token',
-    scope: 'openid'
+    scope: 'openid',
   });
   window = window;
   expiresAt = 0;
   accessToken = '';
   idToken = '';
 
-  constructor(
-    private readonly history: any,
-    private readonly storage: Storage,
-  ) {
+  constructor(private readonly history: any, private readonly storage: Storage) {
     this.tryRestoreSession();
   }
 
   getIdToken = () => {
     return this.storage.getItem('token') || null;
-  }
+  };
 
   handleAuthentication = () => {
     console.log('handleAuthentication');
     this.auth0.parseHash(this.handleParseHash);
-  }
+  };
 
   private handleParseHash = (err: Auth0ParseHashError | null, result?: Auth0DecodedHash | null) => {
     if (result && result.accessToken && result.idToken) {
@@ -41,7 +38,7 @@ export class AuthService {
       alert(`Error: ${err.error}. Check the console for further details.`);
     }
     this.history.replace('/');
-  }
+  };
 
   private setSession(result: Auth0DecodedHash) {
     const { expiresIn = 0, accessToken = '', idToken = '' } = result;
@@ -63,7 +60,7 @@ export class AuthService {
 
   login = () => {
     this.auth0.authorize();
-  }
+  };
 
   logout = () => {
     this.clearSession();
@@ -71,16 +68,16 @@ export class AuthService {
       returnTo: this.window.location.origin,
     });
     this.history.replace('/');
-  }
+  };
 
   isAuthenticated = () => {
     console.log({ isAuthN: new Date().getTime() < this.expiresAt });
     return new Date().getTime() < this.expiresAt;
-  }
+  };
 
   private tryRestoreSession() {
     const exp = Number(this.storage.getItem('token_exp'));
-    const expired =  new Date().getTime() > exp;
+    const expired = new Date().getTime() > exp;
     const token = this.storage.getItem('token');
     if (expired || !token) {
       this.clearSession();
@@ -89,5 +86,4 @@ export class AuthService {
     this.expiresAt = exp;
     this.idToken = token;
   }
-
-};
+}
