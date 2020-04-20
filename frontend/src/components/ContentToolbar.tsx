@@ -1,17 +1,44 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import styled from 'styled-components';
-import { ControlGroup } from '@blueprintjs/core';
+import { ControlGroup, Button, Colors } from '@blueprintjs/core';
 
 const Container = styled.div`
   display: flex;
   height: 30px;
-  padding: 0 15px;
+  justify-content: space-between;
+  padding: 0 0 0 16px;
+  background-color: ${Colors.DARK_GRAY5};
+  box-shadow: 0 0 0 1px rgba(16, 22, 26, 0.4);
 `;
 
-export const ContentToolbar = () => {
+interface Props {
+  dirty: boolean;
+  saveDisabled?: boolean;
+  onSaveClick?: () => {};
+  onCancelClick?: () => {};
+}
+
+export const ContentToolbar: FunctionComponent<Props> = ({
+  dirty,
+  onCancelClick,
+  onSaveClick,
+  saveDisabled,
+}) => {
   return (
     <Container>
       <ControlGroup>Created: ------ Updated: -------</ControlGroup>
+      {dirty && (
+        <ControlGroup>
+          <Button icon="undo" text="Cancel" onClick={onCancelClick} />
+          <Button
+            icon="floppy-disk"
+            text="Save"
+            intent="success"
+            onClick={onSaveClick}
+            disabled={!!saveDisabled}
+          />
+        </ControlGroup>
+      )}
     </Container>
   );
 };

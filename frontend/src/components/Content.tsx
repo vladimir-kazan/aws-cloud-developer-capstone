@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Colors, Divider, H1, EditableText } from '@blueprintjs/core';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
-import { useApi, Note } from '../services/api.service';
 import MonacoEditor from 'react-monaco-editor';
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import useResizeAware from 'react-resize-aware';
@@ -59,10 +58,6 @@ const Editor = styled.div`
   position: relative;
 `;
 
-interface Props {
-  noteId: string;
-}
-
 const options: monacoEditor.editor.IEditorConstructionOptions = {
   selectOnLineNumbers: true,
   minimap: {
@@ -88,10 +83,26 @@ const theme: monacoEditor.editor.IStandaloneThemeData = {
 
 monacoEditor.editor.defineTheme('myTheme', theme);
 
-export const Content = ({ noteId }: Props) => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [note, setNote] = useState<Note>();
-  const [source, setSource] = useState<string>('');
+interface Props {
+  body: string;
+  dirty?: boolean;
+  loading: boolean;
+  onBodyChange?: (body: string) => void;
+  onCancel: () => void;
+  onSave: (title: string, body: string) => void;
+  onTitleChange?: (title: string) => void;
+  title: string;
+}
+export const Content = ({
+  title: initialTitle,
+  body: initialSource,
+  dirty: initialDirty,
+  loading,
+  onTitleChange,
+  onBodyChange,
+  onSave,
+  onCancel,
+}: Props) => {
   const [editorRef, setEditorRef] = useState<monacoEditor.editor.IStandaloneCodeEditor | null>(
     null,
   );
@@ -109,17 +120,20 @@ export const Content = ({ noteId }: Props) => {
     }
   }, [editorRef, loading]);
 
-  const api = useApi();
+  const [title, setTitle] = useState<string>(initialTitle);
+  const [source, setSource] = useState<string>(initialSource);
+  const [dirty, setDirty] = useState<boolean>(initialDirty || false);
   useEffect(() => {
-    setLoading(true);
-    (async () => {
-      const item = await api.getNoteById(noteId);
-      const { body = '' } = item || {};
-      setNote(item);
-      setLoading(false);
-      setSource(body);
-    })();
-  }, [noteId, api]);
+    const hasChanges = initialDirty || initialTitle !== title || initialSource !== source;
+    setDirty(hasChanges);
+  }, [initialTitle, title, initialSource, source, initialDirty]);
+  useEffect(() => {
+    setSource(initialSource);
+  }, [initialSource]);
+
+  useEffect(() => {
+    setTitle(initialTitle);
+  }, [initialTitle]);
 
   const editorDidMount = (
     editor: monacoEditor.editor.IStandaloneCodeEditor,
@@ -127,23 +141,26 @@ export const Content = ({ noteId }: Props) => {
   ) => {
     setEditorRef(editor);
     editor.layout();
-    // editor.focus();
-  };
-  const onChange = (value: string, e: monacoEditor.editor.IModelContentChangedEvent) => {
-    setSource(value);
+    editor.focus();
   };
 
-  const onTitleChange = (value: string) => {
-    if (note) {
-      const updatedNote = { ...note, title: value };
-      setNote(updatedNote);
+  const onChange = (value: string, e: monacoEditor.editor.IModelContentChangedEvent) => {
+    setSource(value);
+    if (onBodyChange) {
+      onBodyChange(value);
     }
   };
 
-  const { title = '' } = note || {};
+  const handleTitleChange = (value: string) => {
+    setTitle(value);
+    if (onTitleChange) {
+      onTitleChange(value);
+    }
+  };
+
   return (
     <PreviewContainer>
-      <ContentToolbar />
+      <ContentToolbar dirty={dirty} />
       <Panels>
         <Left>
           <Title>
@@ -153,9 +170,9 @@ export const Content = ({ noteId }: Props) => {
                 confirmOnEnterKey={true}
                 minLines={1}
                 multiline={true}
-                onChange={onTitleChange}
+                onChange={handleTitleChange}
                 placeholder="Edit title..."
-                selectAllOnFocus={false}
+                selectAllOnFocus={true}
                 value={title}
               />
             </H1>

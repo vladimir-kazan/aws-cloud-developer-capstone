@@ -58,7 +58,7 @@ export class ApiService {
 
 export interface Note {
   noteId: string;
-  userId: string;
+  userId?: string;
   title: string;
   body: string;
   updatedAt: string;

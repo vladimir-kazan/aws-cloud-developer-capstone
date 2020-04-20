@@ -5,6 +5,7 @@ import { Content } from './Content';
 import { useApi, Note } from '../services/api.service';
 import { ListToolbar } from './ListToolbar';
 import { useParams, useHistory } from 'react-router-dom';
+import { formatToShortDate } from '../utils/date';
 
 const Container = styled.div`
   display: flex;
@@ -45,62 +46,114 @@ const Updated = styled.p`
   color: ${Colors.GRAY3};
 `;
 
+const NO_TITLE = 'Untitled Note';
+const getNewNote = (): Note => {
+  return {
+    noteId: 'create',
+    title: NO_TITLE,
+    body: '',
+    createdAt: '',
+    updatedAt: '',
+    updatedAtString: formatToShortDate(new Date()),
+  };
+};
+
 export const HomePage = () => {
   const { noteId } = useParams();
-  console.log({ noteId });
   const history = useHistory();
-  // useEffect(() => {
-  //   if (!noteId) {
-  //     history.replace('/notes/create');
-  //   }
-  // }, [noteId, history]);
-  // console.log({ noteId });
-
   const [notes, setNotes] = useState<Note[]>([]);
-  const [selected, setSelected] = useState<Note | null>(null);
+  const [currentNote, setCurrentNote] = useState<Note>();
+  const [currentNoteTitle, setCurrentNoteTitle] = useState<string>('');
   const api = useApi();
+  const [noteIsLoading, setNoteIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     (async () => {
       const items = await api.getNotes();
       const [first = null] = items;
       setNotes(items);
-      setSelected(first);
+      history.replace(`/notes/${first?.noteId}`);
     })();
-  }, [api]);
+  }, [api, history]);
 
-  const { noteId: selectedId = '' } = selected || {};
   useEffect(() => {
-    if (selectedId) {
-      history.replace(`/notes/${selectedId}`);
+    setNoteIsLoading(true);
+    if (noteId) {
+      history.replace(`/notes/${noteId}`);
     }
-  }, [selectedId, history]);
+  }, [noteId, history]);
+
+  useEffect(() => {
+    if (noteId === 'create') {
+      setCurrentNote(getNewNote());
+      setNoteIsLoading(false);
+    } else {
+      (async () => {
+        const item = await api.getNoteById(noteId || '');
+        setCurrentNote(item || getNewNote());
+        setNoteIsLoading(false);
+      })();
+    }
+  }, [noteId, api]);
+
+  useEffect(() => {
+    setCurrentNoteTitle(currentNote ? currentNote.title : NO_TITLE);
+  }, [currentNote]);
 
   const onAddNew = () => {
-    console.log('onAddNew');
     history.replace('/notes/create');
+  };
+
+  const onSelect = (id: string) => () => {
+    history.replace(`/notes/${id}`);
+  };
+
+  const handleTitleChange = (newTitle: string) => {
+    setCurrentNoteTitle(newTitle || NO_TITLE);
+  };
+  const handleSave = (lastTitle: string, lastBody: string) => {
+    console.log('handleSave', lastTitle, lastBody);
+  };
+  const handleCancel = () => {
+    console.log('handleCancel');
   };
 
   return (
     <Container>
       <LeftPanel>
-        <ListToolbar onAddNew={onAddNew} />
+        <ListToolbar onAddNew={onAddNew} addDisabled={noteId === 'create'} />
+        {noteId === 'create' && currentNote && (
+          <StyledCard interactive={false} selected={true}>
+            <Title>{currentNoteTitle || NO_TITLE}</Title>
+            <Updated>{currentNote.updatedAtString}</Updated>
+          </StyledCard>
+        )}
         {notes.map((n: Note) => {
           return (
             <StyledCard
               key={n.noteId}
               interactive={true}
-              selected={n.noteId === selectedId}
-              onClick={() => setSelected(n)}
+              selected={n.noteId === noteId}
+              onClick={onSelect(n.noteId)}
             >
-              <Title>{n.title}</Title>
+              <Title>{n.noteId === noteId ? currentNoteTitle : n.title}</Title>
               <Updated>{n.updatedAtString}</Updated>
             </StyledCard>
           );
         })}
       </LeftPanel>
       <RightPanel>
-        <Content noteId={selectedId}></Content>
+        {currentNote && (
+          <Content
+            loading={noteIsLoading}
+            dirty={noteId === 'create'}
+            title={currentNote.title}
+            body={currentNote.body}
+            onTitleChange={handleTitleChange}
+            onSave={handleSave}
+            onCancel={handleCancel}
+          ></Content>
+        )}
       </RightPanel>
     </Container>
   );

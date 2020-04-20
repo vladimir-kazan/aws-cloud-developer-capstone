@@ -10,9 +10,10 @@ const FILTER_OPTIONS = [
 
 interface Props {
   onAddNew: () => void;
+  addDisabled: boolean;
 }
 
-export const ListToolbar: FunctionComponent<Props> = ({ onAddNew }) => {
+export const ListToolbar: FunctionComponent<Props> = ({ onAddNew, addDisabled }) => {
   const [sorting, setSorting] = useState<string>(FILTER_OPTIONS[0]);
   return (
     <ControlGroup fill>
@@ -21,7 +22,7 @@ export const ListToolbar: FunctionComponent<Props> = ({ onAddNew }) => {
         value={sorting}
         onChange={(e) => setSorting(e.target.value)}
       />
-      <Button icon="add" text="Add" intent="success" onClick={onAddNew} />
+      <Button icon="add" text="Add" intent="success" onClick={onAddNew} disabled={addDisabled} />
     </ControlGroup>
   );
 };
