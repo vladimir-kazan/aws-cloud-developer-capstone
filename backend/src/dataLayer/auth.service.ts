@@ -1,8 +1,9 @@
 import 'source-map-support/register';
+
 import axios from 'axios';
 import { createLogger } from '../utils';
 
-const { AUTH_JWKS  = ''} = process.env;
+const { AUTH_JWKS = '' } = process.env;
 const logger = createLogger('DL/AuthService');
 
 const certToPEM = (cert: string) => {
@@ -10,7 +11,7 @@ const certToPEM = (cert: string) => {
   cert = match.join('\n');
   cert = `-----BEGIN CERTIFICATE-----\n${cert}\n-----END CERTIFICATE-----\n`;
   return cert;
-}
+};
 
 export class AuthService {
   private pem = '';
@@ -26,4 +27,3 @@ export class AuthService {
     return this.pem;
   }
 }
-

@@ -1,4 +1,5 @@
 import 'source-map-support/register';
+
 import * as AWS from 'aws-sdk';
 // import * as AWSXRay from 'aws-xray-sdk';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
@@ -42,11 +43,38 @@ const createDynamoDbClient = () => {
 export class NotesService {
   constructor(private readonly docClient: DocumentClient = createDynamoDbClient()) {}
 
-  async createItem(dto: NoteModel): Promise<NoteModel> {
+  async createItem(userId: string, dto: NoteModel): Promise<NoteModel> {
+    logger.info('createItem', {
+      ...dto,
+      userId,
+    });
     await this.docClient
       .put({
         TableName: NOTES_TABLE,
-        Item: dto,
+        Item: {
+          ...dto,
+          userId,
+        },
+      })
+      .promise();
+    return dto;
+  }
+
+  async updateItem(userId: string, dto: NoteModel): Promise<NoteModel> {
+    await this.docClient
+      .update({
+        TableName: NOTES_TABLE,
+        Key: {
+          userId,
+          noteId: dto.noteId,
+        },
+        UpdateExpression: `SET updatedAt = :updatedAt, title = :title, body = :body`,
+        ExpressionAttributeValues: {
+          ':updatedAt': dto.updatedAt,
+          ':title': dto.title,
+          ':body': dto.body,
+        },
+        ReturnValues: 'NONE',
       })
       .promise();
     return dto;
@@ -79,6 +107,18 @@ export class NotesService {
       })
       .promise();
     return <NoteModel>output.Item;
+  }
+
+  async deleteById(userId: string, noteId: string): Promise<void> {
+    await this.docClient
+      .delete({
+        TableName: NOTES_TABLE,
+        Key: {
+          userId,
+          noteId,
+        },
+      })
+      .promise();
   }
 }
 

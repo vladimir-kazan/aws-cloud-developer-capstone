@@ -4,4 +4,8 @@ dev:
 
 .PHONY: serve
 serve:
-	cd backend && IS_OFFLINE=true sls offline start --httpPort 3001
+	cd backend && IS_OFFLINE=true npx sls offline start --httpPort 3001
+
+.PHONY: deploy
+deploy:
+	cd backend && npx sls deploy -v

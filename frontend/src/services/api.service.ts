@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import { createContext, useContext } from 'react';
 import { AuthService } from './auth.service';
 import { backendConfig } from '../config';

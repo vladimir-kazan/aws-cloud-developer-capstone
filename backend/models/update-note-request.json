@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "create note item",
+  "type": "object",
+  "properties": {
+    "noteId": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    }
+  },
+  "required": ["noteId", "title", "body"],
+  "additionalProperties": false
+}

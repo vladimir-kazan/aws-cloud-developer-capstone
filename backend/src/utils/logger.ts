@@ -1,3 +1,5 @@
+import 'source-map-support/register';
+
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 interface LoggerOptions {
   level: LogLevel;

@@ -3,7 +3,8 @@ import 'source-map-support/register';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
 import { createLogger, getWithCors } from '../../utils';
-import { getNoteById } from '../../businessLogic/notes';
+import { updateNote } from '../../businessLogic/notes';
+import { NoteModel } from '../../dataLayer/notes.service';
 
 const logger = createLogger('getNotes');
 const withCors = getWithCors({
@@ -11,17 +12,19 @@ const withCors = getWithCors({
   credentials: true,
 });
 
-const noteByIdHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+const updateNoteHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const { authorizer } = event.requestContext || {};
   const { principalId = '' } = authorizer || {};
-  const { noteId = '' } = event.pathParameters || {};
+  const { body = '' } = event || {};
   logger.info('Caller event', event);
-  let item = await getNoteById(principalId, noteId);
+  const dto: Pick<NoteModel, 'title' | 'body' | 'noteId' | 'createdAt'> = JSON.parse(body || '');
+  logger.info('Caller event', event);
+  let item = await updateNote(principalId, dto);
   const response = {
-    statusCode: item ? 200 : 404,
+    statusCode: 200,
     body: JSON.stringify(item),
   };
   return withCors(response);
 };
 
-export const handler = noteByIdHandler;
+export const handler = updateNoteHandler;

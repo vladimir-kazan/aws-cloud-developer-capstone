@@ -1,3 +1,5 @@
+import 'source-map-support/register';
+
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { Logger } from './logger';
 

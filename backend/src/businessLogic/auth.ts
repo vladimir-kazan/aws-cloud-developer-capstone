@@ -1,4 +1,5 @@
 import 'source-map-support/register';
+
 import { verify } from 'jsonwebtoken';
 import { createLogger } from '../utils';
 import { AuthService } from '../dataLayer/auth.service';

@@ -1,3 +1,5 @@
+import 'source-map-support/register';
+
 import auth0, { Auth0DecodedHash, Auth0ParseHashError } from 'auth0-js';
 import { authConfig } from '../config';
 
@@ -23,7 +25,6 @@ export class AuthService {
   };
 
   handleAuthentication = () => {
-    console.log('handleAuthentication');
     this.auth0.parseHash(this.handleParseHash);
   };
 
