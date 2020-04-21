@@ -54,8 +54,6 @@ functions:
           - dynamodb:Query
         Resource:
           arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}/*
-          # - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}/index/${self:provider.environment.NOTES_IDX_TITLE}
-          # - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}/index/${self:provider.environment.NOTES_IDX_UPDATED}
   getNoteById:
     handler: src/lambda/http/noteById.handler
     events:
@@ -115,6 +113,24 @@ functions:
           - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}
 
+  searchNotes:
+    environment:
+      ES_ENDPOINT: !GetAtt ElasticSearchInstance.DomainEndpoint
+    handler: src/lambda/http/searchNotes.handler
+    events:
+      - http:
+          path: search/{expression}
+          method: get
+          cors: true
+          authorizer: auth
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - es:ESHttpGet
+        Resource:
+          Fn::GetAtt: [ElasticSearchInstance, DomainArn]
+
+
   eleasticSearchSync:
     environment:
       ES_ENDPOINT: !GetAtt ElasticSearchInstance.DomainEndpoint
@@ -129,7 +145,6 @@ functions:
           - es:ESHttpPost
         Resource:
           Fn::GetAtt: [ElasticSearchInstance, DomainArn]
-        # Resource: arn:aws:es:us-east-1:772763990514:domain/vku713-notes-search-dev
 
 
 # you can add CloudFormation resource templates here
