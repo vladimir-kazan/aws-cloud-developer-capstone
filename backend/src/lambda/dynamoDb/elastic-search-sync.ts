@@ -2,7 +2,7 @@ import 'source-map-support/register';
 
 import { DynamoDBStreamHandler, DynamoDBStreamEvent, DynamoDBRecord } from 'aws-lambda';
 import * as ElasticSearch from 'elasticsearch';
-import * as httpAwsEs from 'http-aws-es';
+// import { Client } from '@elastic/elasticsearch';
 
 import { createLogger } from '../../utils';
 
@@ -13,8 +13,16 @@ const ES_DOC_TYPE = 'markdown-document';
 const logger = createLogger('eleasticSearchSync');
 const es = new ElasticSearch.Client({
   hosts: [ES_ENDPOINT],
-  connectionClass: httpAwsEs,
+  connectionClass: require('http-aws-es'),
 });
+// const node = ES_ENDPOINT.startsWith('https://') ? ES_ENDPOINT : `https://${ES_ENDPOINT}`;
+// const es = new Client({
+//   node,
+//   auth: {
+//     username: 'test',
+//     password: '_WnPn1azG4KG',
+//   },
+// });
 
 const getNoteIndexData = (record: DynamoDBRecord): [string, any] => {
   const { NewImage: newItem = {} } = record.dynamodb || {};
@@ -35,7 +43,7 @@ const getNoteIndexData = (record: DynamoDBRecord): [string, any] => {
     createdAt: createdAt.S,
     updatedAt: updatedAt.S,
   };
-  return [`${userId}-${noteId}`, payload];
+  return [`${userId.S}__${noteId.S}`, payload];
 };
 
 const insert = async (record: DynamoDBRecord) => {
@@ -53,10 +61,12 @@ const eleasticSearchSyncHandler: DynamoDBStreamHandler = async (
 ): Promise<void> => {
   logger.info('Caller event', event);
   for (const record of event.Records) {
-    logger.info('Processing record', JSON.stringify(record));
+    logger.info('Processing record',record);
     if (record.eventName === 'INSERT') {
       await insert(record);
     }
+    const { NewImage: newItem = {} } = record.dynamodb || {};
+    logger.info('Processed item', newItem);
   }
 };
 

@@ -123,6 +123,14 @@ functions:
       - stream:
           type: dynamodb
           arn: !GetAtt NotesDynamoDBTable.StreamArn
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - es:ESHttpPost
+        Resource:
+          Fn::GetAtt: [ElasticSearchInstance, DomainArn]
+        # Resource: arn:aws:es:us-east-1:772763990514:domain/vku713-notes-search-dev
+
 
 # you can add CloudFormation resource templates here
 resources:

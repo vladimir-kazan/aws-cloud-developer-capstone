@@ -1,6 +1,6 @@
 [
   {
-    "userId": "vku",
+    "userId": "auth0|5e8cddf9c6ec280c7714d286",
     "noteId": "c9fc8f93-3c09-4394-95ab-c4afe1303915",
     "title": "Note number one",
     "body": "# Note number one\n- list item 1\n- list item 2",
@@ -8,7 +8,7 @@
     "updatedAt": "2020-04-14T20:17:14.204Z"
   },
   {
-    "userId": "vku",
+    "userId": "auth0|5e8cddf9c6ec280c7714d286",
     "noteId": "f5be0c16-5584-4008-844e-fdbe39c4e301",
     "title": "Note number two",
     "body": "# Note number two\n- list item 1\n- list item 2",
@@ -16,7 +16,7 @@
     "updatedAt": "2020-04-01T18:17:14.204Z"
   },
   {
-    "userId": "vku",
+    "userId": "auth0|5e8cddf9c6ec280c7714d286",
     "noteId": "f5be0c16-5584-4008-844e-fdbe39c4e302",
     "title": "Note number 3",
     "body": "# Note number 3\n- list item 3-1\n- list item 3-2",
