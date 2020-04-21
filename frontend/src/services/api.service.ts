@@ -19,8 +19,8 @@ const notesUrl = `${backendConfig.api}/notes`;
 export class ApiService {
   constructor(private readonly localStorage: Storage, private readonly auth: AuthService) {}
 
-  getNotes = async (): Promise<Note[]> => {
-    const response = await this.execute(notesUrl);
+  getNotes = async (sorting: string = '-updated'): Promise<Note[]> => {
+    const response = await this.execute(`${notesUrl}?sort=${encodeURIComponent(sorting)}`);
     if (response.status !== 200) {
       return [];
     }

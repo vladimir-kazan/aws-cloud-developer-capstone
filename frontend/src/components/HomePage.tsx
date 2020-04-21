@@ -66,15 +66,21 @@ export const HomePage = () => {
   const [currentNoteTitle, setCurrentNoteTitle] = useState<string>('');
   const api = useApi();
   const [noteIsLoading, setNoteIsLoading] = useState<boolean>(true);
+  const [sorting, setSorting] = useState<string>('-updated');
 
   useEffect(() => {
     (async () => {
-      const items = await api.getNotes();
-      const [first = null] = items;
+      const items = await api.getNotes(sorting);
       setNotes(items);
-      history.replace(`/notes/${first?.noteId}`);
     })();
-  }, [api, history]);
+  }, [api, history, sorting]);
+
+  useEffect(() => {
+    if (!noteId) {
+      const [first = null] = notes;
+      history.replace(`/notes/${first?.noteId}`);
+    }
+  }, [notes, noteId, history]);
 
   useEffect(() => {
     setNoteIsLoading(true);
@@ -108,6 +114,10 @@ export const HomePage = () => {
     history.replace(`/notes/${id}`);
   };
 
+  const handleSortingChange = (sorting: string) => {
+    setSorting(sorting);
+  };
+
   const handleTitleChange = (newTitle: string) => {
     setCurrentNoteTitle(newTitle || NO_TITLE);
   };
@@ -121,7 +131,7 @@ export const HomePage = () => {
   return (
     <Container>
       <LeftPanel>
-        <ListToolbar onAddNew={onAddNew} addDisabled={noteId === 'create'} />
+        <ListToolbar onAddNew={onAddNew} addDisabled={noteId === 'create'} onChangeSorting={handleSortingChange} />
         {noteId === 'create' && currentNote && (
           <StyledCard interactive={false} selected={true}>
             <Title>{currentNoteTitle || NO_TITLE}</Title>
