@@ -1,4 +1,18 @@
 .PHONY: dev
+.PHONY: clean
+clean:
+	rm -rf backend/node_modules
+	rm -rf backend/.dynamodb
+	rm -rf backend/.build
+	rm -rf frontend/node_modules
+
+.PHONY: install
+install:
+	yarn --cwd frontend install
+	npm --prefix backend install -d
+	cd backend && npx sls dynamodb install
+
+.PHONY: dev
 dev:
 	yarn --cwd frontend start
 
