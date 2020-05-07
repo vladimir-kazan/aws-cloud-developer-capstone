@@ -47,6 +47,10 @@ export class ApiService {
     await this.execute(notesUrl, 'put', note);
   };
 
+  deleteNote = async (noteId: string): Promise<void> => {
+    await this.execute(`${notesUrl}/${noteId}`, 'delete');
+  };
+
   private execute = async (
     url: string,
     method: string = 'get',

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Card, Colors } from '@blueprintjs/core';
+import { Card, Colors, Button, Dialog, Classes } from '@blueprintjs/core';
 import { Content } from './Content';
 import { useApi, Note } from '../services/api.service';
 import { ListToolbar } from './ListToolbar';
@@ -33,7 +33,13 @@ const StyledCard = styled(Card)<{ selected: boolean }>`
   &:hover {
     background-color: ${Colors.DARK_GRAY4};
   }
-  p:last-child {
+`;
+
+const CardRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  p {
     margin-bottom: 0;
   }
 `;
@@ -67,6 +73,7 @@ export const HomePage = () => {
   const api = useApi();
   const [noteIsLoading, setNoteIsLoading] = useState<boolean>(true);
   const [sorting, setSorting] = useState<string>('-updated');
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -77,7 +84,7 @@ export const HomePage = () => {
 
   useEffect(() => {
     if (!noteId) {
-      const [first = { noteId: '' }] = notes;
+      const [first = { noteId: 'create' }] = notes;
       history.replace(`/notes/${first?.noteId}`);
     }
   }, [notes, noteId, history]);
@@ -132,6 +139,8 @@ export const HomePage = () => {
           title,
           body,
         });
+        setCurrentNote(undefined);
+        setCurrentNote(note);
       }
     }
     const items = await api.getNotes(sorting);
@@ -154,8 +163,46 @@ export const HomePage = () => {
     }
   };
 
+  const handleDelete = (id: string) => () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDialogClose = () => {
+    setIsConfirmDialogOpen(false);
+  };
+
+  const handleConfirmedDeletion = async () => {
+    await api.deleteNote(noteId);
+    setIsConfirmDialogOpen(false);
+    const items = await api.getNotes(sorting);
+    setCurrentNote(undefined);
+    setNotes(items);
+    history.replace(`/notes`);
+  };
+
+  const deleteDialog = (
+    <Dialog
+      isOpen={isConfirmDialogOpen}
+      title="Confirm deletion"
+      onClose={handleConfirmDialogClose}
+    >
+      <div className={Classes.DIALOG_BODY}>
+        <p>Please confirm that the note to be deleted.</p>
+      </div>
+      <div className={Classes.DIALOG_FOOTER}>
+        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+          <Button onClick={handleConfirmDialogClose}>Cancel</Button>
+          <Button onClick={handleConfirmedDeletion} intent="danger">
+            Delete
+          </Button>
+        </div>
+      </div>
+    </Dialog>
+  );
+
   return (
     <Container>
+      {deleteDialog}
       <LeftPanel>
         <ListToolbar
           onAddNew={onAddNew}
@@ -177,7 +224,10 @@ export const HomePage = () => {
               onClick={onSelect(n.noteId)}
             >
               <Title>{n.noteId === noteId ? currentNoteTitle : n.title}</Title>
-              <Updated>{n.updatedAtString}</Updated>
+              <CardRow>
+                <Updated>{n.updatedAtString}</Updated>
+                <Button icon="trash" minimal onClick={handleDelete(n.noteId)} />
+              </CardRow>
             </StyledCard>
           );
         })}
