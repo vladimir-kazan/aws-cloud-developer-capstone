@@ -132,8 +132,10 @@ export const HomePage = () => {
     history.replace(`/notes`);
   };
 
-  const handleCancel = () => {
-    console.log('handleCancel');
+  const handleCancel = async () => {
+    history.replace(`/notes`);
+    const items = await api.getNotes(sorting);
+    setNotes(items);
   };
 
   return (

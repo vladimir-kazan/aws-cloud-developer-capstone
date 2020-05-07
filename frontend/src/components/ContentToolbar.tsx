@@ -15,7 +15,7 @@ interface Props {
   dirty: boolean;
   saveDisabled?: boolean;
   onSaveClick: () => void;
-  onCancelClick?: () => void;
+  onCancelClick: () => void;
 }
 
 export const ContentToolbar: FunctionComponent<Props> = ({

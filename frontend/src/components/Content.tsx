@@ -164,7 +164,7 @@ export const Content = ({
 
   return (
     <PreviewContainer>
-      <ContentToolbar dirty={dirty} onSaveClick={handleSave} />
+      <ContentToolbar dirty={dirty} onSaveClick={handleSave} onCancelClick={onCancel} />
       <Panels>
         <Left>
           <Title>

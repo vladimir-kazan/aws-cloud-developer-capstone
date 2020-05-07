@@ -40,7 +40,7 @@ export class ApiService {
   };
 
   createNote = async (title: string, body: string): Promise<void> => {
-    const response = await this.execute(notesUrl, 'post', { title, body });
+    await this.execute(notesUrl, 'post', { title, body });
   };
 
   private execute = async (
