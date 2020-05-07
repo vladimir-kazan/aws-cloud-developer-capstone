@@ -14,8 +14,8 @@ const Container = styled.div`
 interface Props {
   dirty: boolean;
   saveDisabled?: boolean;
-  onSaveClick?: () => {};
-  onCancelClick?: () => {};
+  onSaveClick: () => void;
+  onCancelClick?: () => void;
 }
 
 export const ContentToolbar: FunctionComponent<Props> = ({

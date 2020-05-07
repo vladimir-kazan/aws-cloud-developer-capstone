@@ -158,9 +158,13 @@ export const Content = ({
     }
   };
 
+  const handleSave = () => {
+    onSave(title, source);
+  };
+
   return (
     <PreviewContainer>
-      <ContentToolbar dirty={dirty} />
+      <ContentToolbar dirty={dirty} onSaveClick={handleSave} />
       <Panels>
         <Left>
           <Title>

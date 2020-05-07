@@ -39,8 +39,22 @@ export class ApiService {
     return item;
   };
 
-  private execute = async (url: string) => {
+  createNote = async (title: string, body: string): Promise<void> => {
+    const response = await this.execute(notesUrl, 'post', { title, body });
+  };
+
+  private execute = async (
+    url: string,
+    method: string = 'get',
+    payload: Record<string, any> | undefined = undefined,
+  ) => {
+    let body;
+    if (payload) {
+      body = JSON.stringify(payload);
+    }
     const response = await fetch(url, {
+      body,
+      method,
       headers: this.getHeaders(),
     });
     if (response.status === 403) {
