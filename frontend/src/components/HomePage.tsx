@@ -121,21 +121,37 @@ export const HomePage = () => {
   const handleTitleChange = (newTitle: string) => {
     setCurrentNoteTitle(newTitle || NO_TITLE);
   };
-  const handleSave = async (lastTitle: string, lastBody: string) => {
+  const handleSave = async (title: string, body: string) => {
     if (noteId === 'create') {
-      await api.createNote(lastTitle, lastBody);
+      await api.createNote(title, body);
     } else {
-      console.log('handleSave', lastTitle, lastBody);
+      const note = notes.find((n) => n.noteId === noteId);
+      if (note) {
+        await api.updateNote({
+          ...note,
+          title,
+          body,
+        });
+      }
     }
     const items = await api.getNotes(sorting);
     setNotes(items);
-    history.replace(`/notes`);
+    history.replace(`/notes/${noteId === 'create' ? '' : noteId}`);
   };
 
   const handleCancel = async () => {
-    history.replace(`/notes`);
     const items = await api.getNotes(sorting);
     setNotes(items);
+    if (noteId === 'create') {
+      history.replace(`/notes`);
+    } else {
+      const item = await api.getNoteById(noteId || '');
+      console.log({ item });
+      setCurrentNote(undefined);
+      setCurrentNote(item);
+      setNoteIsLoading(false);
+      history.replace(`/notes/${noteId === 'create' ? '' : noteId}`);
+    }
   };
 
   return (

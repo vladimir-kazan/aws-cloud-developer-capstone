@@ -43,6 +43,10 @@ export class ApiService {
     await this.execute(notesUrl, 'post', { title, body });
   };
 
+  updateNote = async (note: Note): Promise<void> => {
+    await this.execute(notesUrl, 'put', note);
+  };
+
   private execute = async (
     url: string,
     method: string = 'get',
