@@ -17,10 +17,10 @@
     "husky": "4.2.5",
     "prettier": "2.0.5",
     "pretty-quick": "2.0.1",
-    "serverless": "1.68.0",
+    "serverless": "1.71.3",
     "serverless-dynamodb-local": "0.2.39",
     "serverless-iam-roles-per-function": "2.0.2",
-    "serverless-offline": "6.1.4",
+    "serverless-offline": "6.1.5",
     "serverless-plugin-typescript": "1.1.9",
     "typescript": "3.8.3"
   },

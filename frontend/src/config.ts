@@ -4,9 +4,7 @@ export const authConfig = {
   callbackUrl: 'http://localhost:3000/callback',
 };
 
-
 export const backendConfig = {
-  // https://gs4v8kipq1.execute-api.us-east-1.amazonaws.com/dev
-  //
-  api: 'http://localhost:3001/dev',
+  // api: 'http://localhost:3001/dev',
+  api: 'https://u7tt9glop1.execute-api.us-east-1.amazonaws.com/dev',
 };

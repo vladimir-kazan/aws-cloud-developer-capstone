@@ -17,10 +17,11 @@ interface CorsOptions {
 
 export const getWithCors = (options: CorsOptions) => {
   return (response: APIGatewayProxyResult) => {
-    if (response.headers) {
-      response.headers['Access-Control-Allow-Credentials'] = options.credentials;
-      response.headers['Access-Control-Allow-Origin'] = options.origin;
+    if (!response.headers) {
+      response.headers = {};
     }
+    response.headers['Access-Control-Allow-Credentials'] = options.credentials;
+    response.headers['Access-Control-Allow-Origin'] = options.origin;
     return response;
   };
 };

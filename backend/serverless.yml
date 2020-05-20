@@ -52,8 +52,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:Query
-        Resource:
-          arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}/*
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}/*
   getNoteById:
     handler: src/lambda/http/noteById.handler
     events:
@@ -130,7 +129,6 @@ functions:
         Resource:
           Fn::GetAtt: [ElasticSearchInstance, DomainArn]
 
-
   eleasticSearchSync:
     environment:
       ES_ENDPOINT: !GetAtt ElasticSearchInstance.DomainEndpoint
@@ -146,7 +144,6 @@ functions:
         Resource:
           Fn::GetAtt: [ElasticSearchInstance, DomainArn]
 
-
 # you can add CloudFormation resource templates here
 resources:
   Resources:
@@ -158,6 +155,9 @@ resources:
           gatewayresponse.header.Access-Control-Allow-Credentials: "'*'"
           gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
           gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+          # or alternative
+          # gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+          # gatewayresponse.header.Access-Control-Allow-Methods:  "'*'"
         ResponseType: DEFAULT_4XX
         RestApiId:
           Ref: ApiGatewayRestApi

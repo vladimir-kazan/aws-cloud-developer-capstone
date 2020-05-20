@@ -81,7 +81,6 @@ export class NotesService {
   }
 
   async getItems(userId: string, sortBy: string): Promise<NoteModel[]> {
-    logger.info('ELASTIC_URL', { ELASTIC_URL });
     const payload = await this.docClient
       .query({
         TableName: NOTES_TABLE,
