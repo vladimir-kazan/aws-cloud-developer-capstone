@@ -122,6 +122,7 @@ export class NotesService {
 }
 
 export interface NoteModel {
+  userId: string;
   noteId: string;
   title: string;
   body: string;

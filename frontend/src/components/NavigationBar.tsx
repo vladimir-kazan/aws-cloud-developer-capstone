@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Alignment,
   Button,
@@ -10,8 +10,9 @@ import {
 } from '@blueprintjs/core';
 import { useHistory } from 'react-router-dom';
 import { Suggest, IItemRendererProps } from '@blueprintjs/select';
+import { debounce } from 'throttle-debounce';
 import { AuthService } from '../services/auth.service';
-import { Note } from '../services/api.service';
+import { Note, useApi } from '../services/api.service';
 
 const NoteSuggest = Suggest.ofType<Note>();
 
@@ -21,21 +22,27 @@ interface Props {
 
 export const NavigationBar = (props: Props) => {
   const history = useHistory();
+  const api = useApi();
   const navigate = (path: string) => () => {
     history.push(path);
   };
   const [query, setQuery] = useState<string>('');
-  const note: Note = {
-    noteId: 'noteId',
-    // userId?: string;
-    title: 'title',
-    body: 'body',
-    updatedAt: 'updatedAt',
-    createdAt: 'createdAt',
-  };
+  const [suggestedNotes, setSuggestedNotes] = useState<Note[]>([]);
+  const search = useRef(
+    debounce(400, (query: string) => {
+      if (!query) {
+        setSuggestedNotes([]);
+        return;
+      }
+      (async () => {
+        const suggestions = await api.searchNotes(query);
+        setSuggestedNotes(suggestions);
+      })();
+    }),
+  );
 
   useEffect(() => {
-    console.log({ query });
+    search.current(query);
   }, [query]);
 
   const itemRenderer = (item: Note, props: IItemRendererProps) => {
@@ -55,13 +62,15 @@ export const NavigationBar = (props: Props) => {
         <Button className={Classes.MINIMAL} icon="help" text="Help" onClick={navigate('/help')} />
         <Navbar.Divider />
         <NoteSuggest
-          items={[note]}
+          items={suggestedNotes}
           itemsEqual="noteId"
-          inputValueRenderer={(item: Note) => item.title}
+          query={query}
+          inputValueRenderer={(item: Note) => query && item.title}
           itemRenderer={itemRenderer}
           onQueryChange={onQueryChange}
-          onItemSelect={(item: Note, e: any) => {
-            console.log({ item, e });
+          onItemSelect={(item: Note) => {
+            setQuery('');
+            navigate(`/notes/${item.noteId}`)();
           }}
         />
       </Navbar.Group>

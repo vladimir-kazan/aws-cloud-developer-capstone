@@ -37,16 +37,22 @@ const searchNotesHandler = async (event: APIGatewayProxyEvent): Promise<APIGatew
           must: [
             {
               query_string: {
-                query: queryExpression
-              }
-            }
-          ]
-        }
-      }
-    }
+                query: queryExpression,
+              },
+            },
+          ],
+        },
+      },
+    },
   };
   const result = await es.search<NoteModel>(params);
-  const items = result.hits.hits.map(i => i._source);
+  const items = result.hits.hits
+    .map((i) => i._source)
+    .filter((n) => n.userId === principalId)
+    .map((n) => {
+      n.body = '';
+      return n;
+    });
   const response = {
     statusCode: 200,
     body: JSON.stringify(items),

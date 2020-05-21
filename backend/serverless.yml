@@ -8,6 +8,8 @@ plugins:
   - serverless-offline # serverless offline start
   - serverless-iam-roles-per-function
 
+  # https://github.com/fernando-mc/serverless-finch#readme
+
 provider:
   name: aws
   runtime: nodejs12.x

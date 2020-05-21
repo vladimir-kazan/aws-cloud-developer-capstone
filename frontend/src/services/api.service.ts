@@ -51,6 +51,15 @@ export class ApiService {
     await this.execute(`${notesUrl}/${noteId}`, 'delete');
   };
 
+  searchNotes = async (query: string): Promise<Note[]> => {
+    const response = await this.execute(`${backendConfig.api}/search/${encodeURIComponent(query)}`);
+    if (response.status !== 200) {
+      return [];
+    }
+    const result = await response.json();
+    return result;
+  };
+
   private execute = async (
     url: string,
     method: string = 'get',
