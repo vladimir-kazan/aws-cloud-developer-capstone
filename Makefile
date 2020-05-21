@@ -27,3 +27,12 @@ clean-build:
 .PHONY: deploy
 deploy: clean-build
 	cd backend && npx sls deploy -v
+
+
+.PHONY: build-client
+build-client:
+	yarn --cwd frontend build
+
+.PHONY: deploy-client
+deploy-client:
+	cd backend && npx sls client deploy

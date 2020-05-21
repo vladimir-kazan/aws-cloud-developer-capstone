@@ -7,7 +7,7 @@ plugins:
   # - serverless-plugin-offline-dynamodb-stream
   - serverless-offline # serverless offline start
   - serverless-iam-roles-per-function
-
+  - serverless-finch
   # https://github.com/fernando-mc/serverless-finch#readme
 
 provider:
@@ -20,7 +20,7 @@ provider:
     NOTES_TABLE: notes-${self:provider.stage}-v1
     NOTES_IDX_TITLE: notes-idx-title-${self:provider.stage}-v1
     NOTES_IDX_UPDATED: notes-idx-updated-${self:provider.stage}-v1
-    NOTES_BUCKET: notes-images-${self:provider.stage}-v1
+    NOTES_HOSTING_BUCKET: notes-markdown-hosting-${self:provider.stage}-v1
     ELASTIC_URL:
       Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]
 
@@ -227,10 +227,10 @@ resources:
               Action: 'es:*'
               Resource: '*'
 
-    AttachmentsBucket:
+    S3HostingBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:provider.environment.NOTES_BUCKET}
+        BucketName: ${self:provider.environment.NOTES_HOSTING_BUCKET}
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:
@@ -243,23 +243,28 @@ resources:
                 - PUT
                 - DELETE
                 - HEAD
+                - OPTIONS
               MaxAge: 3000
-    # BucketPolicy:
-    #   Type: AWS::S3::BucketPolicy
-    #   Properties:
-    #     Bucket:
-    #       Ref: AttachmentsBucket
-    #     PolicyDocument:
-    #       Id: NotesBucketPolicy
-    #       Version: "2012-10-17"
-    #       Statement:
-    #         - Sid: PublicReadForGetBucketObjects
-    #           Effect: Allow
-    #           Principal: '*'
-    #           Action: 's3:GetObject'
-    #           Resource: 'arn:aws:s3:::${self:provider.environment.NOTES_BUCKET}/*'
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: AttachmentsBucket
+        PolicyDocument:
+          Id: NotesBucketPolicy
+          Version: '2012-10-17'
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.NOTES_HOSTING_BUCKET}/*'
 
 custom:
+  client:
+    bucketName: ${self:provider.environment.NOTES_HOSTING_BUCKET}
+    distributionFolder: ../frontend/build
   dynamodb:
     stages:
       - dev
