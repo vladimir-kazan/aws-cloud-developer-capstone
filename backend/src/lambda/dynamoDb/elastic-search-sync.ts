@@ -15,14 +15,6 @@ const es = new ElasticSearch.Client({
   hosts: [ES_ENDPOINT],
   connectionClass: require('http-aws-es'),
 });
-// const node = ES_ENDPOINT.startsWith('https://') ? ES_ENDPOINT : `https://${ES_ENDPOINT}`;
-// const es = new Client({
-//   node,
-//   auth: {
-//     username: 'test',
-//     password: '_WnPn1azG4KG',
-//   },
-// });
 
 const getNoteIndexData = (record: DynamoDBRecord): [string, any] => {
   const { NewImage: newItem = {} } = record.dynamodb || {};
@@ -56,14 +48,43 @@ const insert = async (record: DynamoDBRecord) => {
   });
 };
 
+const update = async (record: DynamoDBRecord) => {
+  const [id, body] = getNoteIndexData(record);
+  await es.update({
+    index: ES_INDEX_NAME,
+    type: ES_DOC_TYPE,
+    id,
+    body,
+  });
+};
+
+const deleteIdx = async (record: DynamoDBRecord) => {
+  const [id] = getNoteIndexData(record);
+  await es.delete({
+    index: ES_INDEX_NAME,
+    type: ES_DOC_TYPE,
+    id,
+  });
+};
+
 const eleasticSearchSyncHandler: DynamoDBStreamHandler = async (
   event: DynamoDBStreamEvent,
 ): Promise<void> => {
   logger.info('Caller event', event);
   for (const record of event.Records) {
-    logger.info('Processing record',record);
-    if (record.eventName === 'INSERT') {
-      await insert(record);
+    logger.info('Processing record', record);
+    switch (record.eventName) {
+      case 'INSERT':
+        await insert(record);
+        break;
+      case 'MODIFY':
+        logger.info('Handle Update', '');
+        await update(record);
+        break;
+      case 'REMOVE':
+        logger.info('Handle Remove', '');
+        await deleteIdx(record);
+        break;
     }
     const { NewImage: newItem = {} } = record.dynamodb || {};
     logger.info('Processed item', newItem);

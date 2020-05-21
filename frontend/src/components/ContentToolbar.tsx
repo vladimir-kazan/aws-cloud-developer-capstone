@@ -26,7 +26,7 @@ export const ContentToolbar: FunctionComponent<Props> = ({
 }) => {
   return (
     <Container>
-      <ControlGroup>Created: ------ Updated: -------</ControlGroup>
+      <ControlGroup />
       {dirty && (
         <ControlGroup>
           <Button icon="undo" text="Cancel" onClick={onCancelClick} />

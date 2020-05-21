@@ -44,7 +44,8 @@ export class ApiService {
   };
 
   updateNote = async (note: Note): Promise<void> => {
-    await this.execute(notesUrl, 'put', note);
+    const { noteId, title, body } = note;
+    await this.execute(notesUrl, 'put', { noteId, title, body });
   };
 
   deleteNote = async (noteId: string): Promise<void> => {

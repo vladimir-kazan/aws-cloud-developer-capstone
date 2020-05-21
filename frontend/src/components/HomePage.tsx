@@ -114,11 +114,11 @@ export const HomePage = () => {
   }, [currentNote]);
 
   const onAddNew = () => {
-    history.replace('/notes/create');
+    history.push('/notes/create');
   };
 
   const onSelect = (id: string) => () => {
-    history.replace(`/notes/${id}`);
+    history.push(`/notes/${id}`);
   };
 
   const handleSortingChange = (sorting: string) => {
@@ -131,6 +131,7 @@ export const HomePage = () => {
   const handleSave = async (title: string, body: string) => {
     if (noteId === 'create') {
       await api.createNote(title, body);
+      history.push(`/notes`);
     } else {
       const note = notes.find((n) => n.noteId === noteId);
       if (note) {
@@ -139,23 +140,20 @@ export const HomePage = () => {
           title,
           body,
         });
-        setCurrentNote(undefined);
-        setCurrentNote(note);
+        history.push(`/notes/${note.noteId}`);
       }
     }
     const items = await api.getNotes(sorting);
     setNotes(items);
-    history.replace(`/notes/${noteId === 'create' ? '' : noteId}`);
   };
 
   const handleCancel = async () => {
     const items = await api.getNotes(sorting);
     setNotes(items);
     if (noteId === 'create') {
-      history.replace(`/notes`);
+      history.push(`/notes`);
     } else {
       const item = await api.getNoteById(noteId || '');
-      console.log({ item });
       setCurrentNote(undefined);
       setCurrentNote(item);
       setNoteIsLoading(false);

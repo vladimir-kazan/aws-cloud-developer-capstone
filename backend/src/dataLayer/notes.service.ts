@@ -6,13 +6,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { createLogger } from '../utils';
 
 let XAWS: any = AWS;
-const {
-  NOTES_TABLE = '',
-  NOTES_IDX_TITLE = '',
-  NOTES_IDX_UPDATED = '',
-  ELASTIC_URL = '',
-  IS_OFFLINE,
-} = process.env;
+const { NOTES_TABLE = '', NOTES_IDX_TITLE = '', NOTES_IDX_UPDATED = '', IS_OFFLINE } = process.env;
 if (!IS_OFFLINE) {
   // it adds 10MB
   // XAWS = AWSXRay.captureAWS(AWS);
@@ -122,7 +116,7 @@ export class NotesService {
 }
 
 export interface NoteModel {
-  userId: string;
+  userId?: string;
   noteId: string;
   title: string;
   body: string;
