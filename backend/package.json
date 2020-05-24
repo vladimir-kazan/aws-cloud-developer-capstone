@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -12,9 +12,11 @@
     "@types/aws-lambda": "8.10.51",
     "@types/elasticsearch": "5.0.36",
     "@types/http-aws-es": "6.0.0",
+    "@types/jest": "25.2.3",
     "@types/jsonwebtoken": "8.3.9",
     "aws-xray-sdk": "3.0.0",
     "husky": "4.2.5",
+    "jest": "26.0.1",
     "prettier": "2.0.5",
     "pretty-quick": "2.0.1",
     "serverless": "1.71.3",
@@ -22,6 +24,7 @@
     "serverless-iam-roles-per-function": "2.0.2",
     "serverless-offline": "6.1.5",
     "serverless-plugin-typescript": "1.1.9",
+    "ts-jest": "26.0.0",
     "typescript": "3.8.3"
   },
   "dependencies": {
