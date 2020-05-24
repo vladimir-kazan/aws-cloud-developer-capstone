@@ -227,24 +227,24 @@ resources:
               Action: 'es:*'
               Resource: '*'
 
-    S3HostingBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: ${self:provider.environment.NOTES_HOSTING_BUCKET}
-        CorsConfiguration:
-          CorsRules:
-            - AllowedOrigins:
-                - '*'
-              AllowedHeaders:
-                - '*'
-              AllowedMethods:
-                - GET
-                - POST
-                - PUT
-                - DELETE
-                - HEAD
-                - OPTIONS
-              MaxAge: 3000
+    # S3HostingBucket:
+    #   Type: AWS::S3::Bucket
+    #   Properties:
+    #     BucketName: ${self:provider.environment.NOTES_HOSTING_BUCKET}
+    #     CorsConfiguration:
+    #       CorsRules:
+    #         - AllowedOrigins:
+    #             - '*'
+    #           AllowedHeaders:
+    #             - '*'
+    #           AllowedMethods:
+    #             - GET
+    #             - POST
+    #             - PUT
+    #             - DELETE
+    #             - HEAD
+    #             - OPTIONS
+    #           MaxAge: 3000
 
     BucketPolicy:
       Type: AWS::S3::BucketPolicy

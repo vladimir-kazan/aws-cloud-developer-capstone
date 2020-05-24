@@ -33,5 +33,6 @@ jobs:
         - make test
     - stage: deploy
       script:
-        - echo DEPLOY
         - make deploy
+        - make build-client
+        - make deploy-client

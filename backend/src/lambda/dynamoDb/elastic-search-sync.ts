@@ -73,19 +73,24 @@ const eleasticSearchSyncHandler: DynamoDBStreamHandler = async (
   logger.info('Caller event', event);
   for (const record of event.Records) {
     logger.info('Processing record', record);
-    switch (record.eventName) {
-      case 'INSERT':
-        await insert(record);
-        break;
-      case 'MODIFY':
-        logger.info('Handle Update', '');
-        await update(record);
-        break;
-      case 'REMOVE':
-        logger.info('Handle Remove', '');
-        await deleteIdx(record);
-        break;
+    try {
+      switch (record.eventName) {
+        case 'INSERT':
+          await insert(record);
+          break;
+        case 'MODIFY':
+          logger.info('Handle Update', '');
+          await update(record);
+          break;
+        case 'REMOVE':
+          logger.info('Handle Remove', '');
+          await deleteIdx(record);
+          break;
+      }
+    } catch (err) {
+      logger.error('Processing error', err);
     }
+
     const { NewImage: newItem = {} } = record.dynamodb || {};
     logger.info('Processed item', newItem);
   }
