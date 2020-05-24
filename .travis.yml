@@ -10,30 +10,25 @@ git:
 stages:
   - name: test
     if: branch = master
+  - name: deploy
+    if: branch = master
 
-# env:
-#   - DOCKER_COMPOSE_VERSION=1.23.2
+env:
+  global:
+    # include $HOME/.local/bin for `aws`
+    - PATH=$HOME/.local/bin:$PATH
 
 before_install:
   - pyenv global 3.7.1
   - pip install -U pip
   - pip install awscli
 
-# before_install:
-#   - docker -v && docker-compose -v
-#   - sudo rm /usr/local/bin/docker-compose
-#   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-#   - chmod +x docker-compose
-#   - sudo mv docker-compose /usr/local/bin
-#   - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-#   - chmod +x ./kubectl
-#   - sudo mv ./kubectl /usr/local/bin/kubectl
-
 install:
   - make install
 
 script:
   - make test
+  - echo $AWS_DEFAULT_REGION
 # before_deploy:
 #   - 'curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"'
 #   - 'unzip awscli-bundle.zip'
