@@ -1,4 +1,6 @@
 language: node_js
+dist: xenial
+os: linux
 node_js:
   - 12
 
@@ -6,7 +8,7 @@ git:
   depth: false
 
 stages:
-  - name: build-and-deploy
+  - name: test
     if: branch = master
 
 # env:
