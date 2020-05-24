@@ -36,3 +36,7 @@ build-client:
 .PHONY: deploy-client
 deploy-client:
 	cd backend && npx sls client deploy
+
+.PHONY: test
+test:
+	npm --prefix backend test
