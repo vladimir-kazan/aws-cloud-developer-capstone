@@ -5,7 +5,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { createLogger, getWithCors } from '../../utils';
 import { getNoteById } from '../../businessLogic/notes';
 
-const logger = createLogger('getNotes');
+const logger = createLogger('getNoteById');
 const withCors = getWithCors({
   origin: '*',
   credentials: true,

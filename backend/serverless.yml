@@ -250,7 +250,7 @@ resources:
       Type: AWS::S3::BucketPolicy
       Properties:
         Bucket:
-          Ref: AttachmentsBucket
+          Ref: S3HostingBucket
         PolicyDocument:
           Id: NotesBucketPolicy
           Version: '2012-10-17'

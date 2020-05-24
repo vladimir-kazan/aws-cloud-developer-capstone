@@ -6,7 +6,7 @@ import { createLogger, getWithCors } from '../../utils';
 import { updateNote } from '../../businessLogic/notes';
 import { NoteModel } from '../../dataLayer/notes.service';
 
-const logger = createLogger('getNotes');
+const logger = createLogger('updateNote');
 const withCors = getWithCors({
   origin: '*',
   credentials: true,

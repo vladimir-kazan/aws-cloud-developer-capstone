@@ -31,7 +31,6 @@ jobs:
     - stage: test
       script:
         - make test
-        - echo $AWS_DEFAULT_REGION
     - stage: deploy
       script:
         - echo DEPLOY
