@@ -22,3 +22,13 @@ Manually deployment can be executed with next command:
 
 1. `make deploy` to build and deploy serverless applicaiton.
 2. `make deploy-client` to build and deploy frontend application into S3 bucket.
+
+## Elastic Search
+
+Elastic Search is used to execute full-text search.
+So it could have some delay before search results are available while DynamoDB does syncronization with Elastic Search
+
+Implementation:
+
+- `backend/src/lambda/http/searchNotes.ts`
+- `backend/src/lambda/dynamoDb/elastic-search-sync.ts`
