@@ -33,6 +33,4 @@ jobs:
         - make test
     - stage: deploy
       script:
-        - make deploy
-        - make build-client
-        - make deploy-client
+        - make deploy-all

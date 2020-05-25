@@ -34,9 +34,13 @@ build-client:
 	yarn --cwd frontend build
 
 .PHONY: deploy-client
-deploy-client:
-	cd backend && npx sls client deploy
+deploy-client: build-client
+	cd backend && npx sls client deploy --no-confirm
 
 .PHONY: test
 test:
 	npm --prefix backend test
+
+.PHONY: deploy-all
+deploy-all: deploy deploy-client
+

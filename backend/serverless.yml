@@ -245,21 +245,20 @@ resources:
     #             - HEAD
     #             - OPTIONS
     #           MaxAge: 3000
-
-    BucketPolicy:
-      Type: AWS::S3::BucketPolicy
-      Properties:
-        Bucket:
-          Ref: S3HostingBucket
-        PolicyDocument:
-          Id: NotesBucketPolicy
-          Version: '2012-10-17'
-          Statement:
-            - Sid: PublicReadForGetBucketObjects
-              Effect: Allow
-              Principal: '*'
-              Action: 's3:GetObject'
-              Resource: 'arn:aws:s3:::${self:provider.environment.NOTES_HOSTING_BUCKET}/*'
+    # BucketPolicy:
+    #   Type: AWS::S3::BucketPolicy
+    #   Properties:
+    #     Bucket:
+    #       Ref: S3HostingBucket
+    #     PolicyDocument:
+    #       Id: NotesBucketPolicy
+    #       Version: '2012-10-17'
+    #       Statement:
+    #         - Sid: PublicReadForGetBucketObjects
+    #           Effect: Allow
+    #           Principal: '*'
+    #           Action: 's3:GetObject'
+    #           Resource: 'arn:aws:s3:::${self:provider.environment.NOTES_HOSTING_BUCKET}/*'
 
 custom:
   client:
