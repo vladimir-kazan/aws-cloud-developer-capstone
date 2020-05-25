@@ -264,6 +264,8 @@ custom:
   client:
     bucketName: ${self:provider.environment.NOTES_HOSTING_BUCKET}
     distributionFolder: ../frontend/build
+    indexDocument: index.html
+    errorDocument: index.html
   dynamodb:
     stages:
       - dev
