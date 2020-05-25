@@ -4,6 +4,9 @@
 
 ## Markdown Notes with Serverless Design
 
+Application is hosted:
+http://notes-markdown-hosting-dev-v1.s3-website-us-east-1.amazonaws.com/
+
 ![img/md-notes-login.png](img/md-notes-login.png)
 ![img/md-notes-page.png](img/md-notes-page.png)
 
