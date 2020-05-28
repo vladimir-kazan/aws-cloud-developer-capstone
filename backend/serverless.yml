@@ -127,7 +127,11 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
+          - es:ESHttpDelete
           - es:ESHttpGet
+          - es:ESHttpHead
+          - es:ESHttpPost
+          - es:ESHttpPut
         Resource:
           Fn::GetAtt: [ElasticSearchInstance, DomainArn]
 
@@ -142,7 +146,11 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
+          - es:ESHttpDelete
+          - es:ESHttpGet
+          - es:ESHttpHead
           - es:ESHttpPost
+          - es:ESHttpPut
         Resource:
           Fn::GetAtt: [ElasticSearchInstance, DomainArn]
 

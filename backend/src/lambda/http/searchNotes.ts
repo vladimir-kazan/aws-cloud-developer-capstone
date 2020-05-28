@@ -45,19 +45,28 @@ const searchNotesHandler = async (event: APIGatewayProxyEvent): Promise<APIGatew
       },
     },
   };
-  const result = await es.search<NoteModel>(params);
-  const items = result.hits.hits
-    .map((i) => i._source)
-    .filter((n) => n.userId === principalId)
-    .map((n) => {
-      n.body = '';
-      return n;
-    });
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify(items),
-  };
-  return withCors(response);
+  try {
+    const result = await es.search<NoteModel>(params);
+    const items = result.hits.hits
+      .map((i) => i._source)
+      .filter((n) => n.userId === principalId)
+      .map((n) => {
+        n.body = '';
+        return n;
+      });
+    const response = {
+      statusCode: 200,
+      body: JSON.stringify(items),
+    };
+    return withCors(response);
+  } catch (err) {
+    logger.error('Caller error', err);
+    const response = {
+      statusCode: 500,
+      body: JSON.stringify(err),
+    };
+    return withCors(response);
+  }
 };
 
 export const handler = searchNotesHandler;

@@ -50,7 +50,7 @@ const insert = async (record: DynamoDBRecord) => {
 
 const update = async (record: DynamoDBRecord) => {
   const [id, body] = getNoteIndexData(record);
-  await es.update({
+  await es.index({
     index: ES_INDEX_NAME,
     type: ES_DOC_TYPE,
     id,
@@ -58,11 +58,11 @@ const update = async (record: DynamoDBRecord) => {
   });
 };
 
-const deleteIdx = async (record: DynamoDBRecord) => {
-  const [id] = getNoteIndexData(record);
+const deleteIdx = async (id: string) => {
   await es.delete({
     index: ES_INDEX_NAME,
     type: ES_DOC_TYPE,
+    refresh: true,
     id,
   });
 };
@@ -73,6 +73,8 @@ const eleasticSearchSyncHandler: DynamoDBStreamHandler = async (
   logger.info('Caller event', event);
   for (const record of event.Records) {
     logger.info('Processing record', record);
+    const { NewImage: item = {} } = record.dynamodb || {};
+    logger.info('Processed item', item);
     try {
       switch (record.eventName) {
         case 'INSERT':
@@ -83,16 +85,15 @@ const eleasticSearchSyncHandler: DynamoDBStreamHandler = async (
           await update(record);
           break;
         case 'REMOVE':
-          logger.info('Handle Remove', '');
-          await deleteIdx(record);
+          const { userId, noteId } = record.dynamodb?.Keys || {};
+          const id = `${userId.S}__${noteId.S}`;
+          logger.info('Handle Remove', { id });
+          await deleteIdx(id);
           break;
       }
     } catch (err) {
       logger.error('Processing error', err);
     }
-
-    const { NewImage: newItem = {} } = record.dynamodb || {};
-    logger.info('Processed item', newItem);
   }
 };
 
